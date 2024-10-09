@@ -49,44 +49,45 @@ export default {
     const description = ref('');
     const message = ref('');
 
-    const createAppointment = async () => {
-      if (!props.isAuthenticated) {
-        message.value = 'Please log in to create an appointment.';
-        return;
-      }
+/**
+ * Creates an appointment in the Outlook calendar.
+ * @async
+ * @function createAppointment
+ * @returns {Promise<void>} - A promise that resolves when the appointment is created.
+ */
+const createAppointment = async () => {
+  if (!props.isAuthenticated) {
+    message.value = 'Please log in to create an appointment.';
+    return;
+  }
 
-      try {
-        // Get the access token from localStorage
-        const token = localStorage.getItem('accessToken');
-        if (!token) {
-          message.value = 'Access token is missing. Please log in again.';
-          return;
-        }
+  try {
+    const token = localStorage.getItem('accessToken');
+    if (!token) {
+      message.value = 'Access token is missing. Please log in again.';
+      return;
+    }
 
-        // Send request to the backend to create the appointment
-        const response = await axios.post(
-          'http://localhost:3000/appointments',
-          {
-            accessToken: token, // Use the stored access token
-            title: title.value,
-            startTime: startTime.value,
-            endTime: endTime.value,
-            description: description.value,
-          }
-        );
+    const response = await axios.post('http://localhost:3000/appointments', {
+      accessToken: token,
+      title: title.value,
+      startTime: startTime.value,
+      endTime: endTime.value,
+      description: description.value,
+    });
 
-        if (response.status === 201) {
-          message.value = 'Appointment created successfully!';
-          title.value = '';
-          startTime.value = '';
-          endTime.value = '';
-          description.value = '';
-        }
-      } catch (error) {
-        console.error('Error creating appointment:', error);
-        message.value = 'Failed to create appointment. Please try again.';
-      }
-    };
+    if (response.status === 201) {
+      message.value = 'Appointment created successfully!';
+      title.value = '';
+      startTime.value = '';
+      endTime.value = '';
+      description.value = '';
+    }
+  } catch (error) {
+    console.error('Error creating appointment:', error);
+    message.value = 'Failed to create appointment. Please try again.';
+  }
+};
 
     return {
       title,

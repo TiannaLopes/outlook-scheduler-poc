@@ -22,15 +22,27 @@ export default {
   components: {
     AppointmentForm,
   },
+  /**
+   * Sets up the component's reactive state and methods.
+   * @returns {Object} The component's reactive state and methods.
+   */
   setup() {
     const isAuthenticated = ref(false);
     const userName = ref('');
     const accessToken = ref('');
 
+    /**
+     * Redirects the user to the authentication endpoint for login.
+     * This function initiates the login flow by navigating to the backend login endpoint.
+     */
     const login = () => {
       window.location.href = 'http://localhost:3000/auth/login';
     };
 
+    /**
+     * Logs out the user by clearing authentication data.
+     * This function resets the authentication state and removes the access token from localStorage.
+     */
     const logout = () => {
       isAuthenticated.value = false;
       userName.value = '';
@@ -39,6 +51,11 @@ export default {
       alert('You have been logged out.');
     };
 
+    /**
+     * Checks if the user is authenticated by examining the URL parameters or localStorage.
+     * If an access token is found in the URL, it is stored in localStorage.
+     * If no token is found in the URL, localStorage is checked for a stored token.
+     */
     const checkAuthentication = () => {
       const urlParams = new URLSearchParams(window.location.search);
       const token = urlParams.get('accessToken');
@@ -62,6 +79,7 @@ export default {
       }
     };
 
+    // Lifecycle hook to check authentication when the component is mounted
     onMounted(() => {
       checkAuthentication();
     });
