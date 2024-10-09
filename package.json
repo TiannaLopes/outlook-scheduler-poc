@@ -8,7 +8,7 @@
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint",
     "docs": "jsdoc -c jsdoc.json",
-        "deploy-docs": "npm run docs && gh-pages -d docs",
+    "deploy-docs": "npm run docs && gh-pages -d docs",
     "format": "prettier --write \"src/**/*.{js,vue,css,html}\""
   },
   "dependencies": {
