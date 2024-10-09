@@ -9,65 +9,68 @@
     <div v-else>
       <p>Welcome, {{ userName }}</p>
       <button @click="logout">Logout</button>
-      <AppointmentForm />
+      <AppointmentForm :isAuthenticated="isAuthenticated" />
     </div>
   </div>
 </template>
 
 <script>
-import axios from 'axios';
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
+import AppointmentForm from './components/AppointmentForm.vue';
 
 export default {
+  components: {
+    AppointmentForm,
+  },
   setup() {
     const isAuthenticated = ref(false);
     const userName = ref('');
     const accessToken = ref('');
 
-    const login = async () => {
-      window.location.href = 'http://localhost:3000/auth/login'; // Start the OAuth flow
+    const login = () => {
+      window.location.href = 'http://localhost:3000/auth/login';
     };
 
-    const getTokens = async (authCode) => {
-      try {
-        const response = await axios.get(`http://localhost:3000/auth/callback?code=${authCode}`);
-        accessToken.value = response.data.accessToken;  // Store the access token
-        console.log('Access Token:', accessToken.value);
+    const logout = () => {
+      isAuthenticated.value = false;
+      userName.value = '';
+      accessToken.value = '';
+      localStorage.removeItem('accessToken'); // Clear the token from localStorage
+      alert('You have been logged out.');
+    };
 
-        // Now that we have the access token, fetch the user's profile
-        getUserProfile(accessToken.value);
+    const checkAuthentication = () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      const token = urlParams.get('accessToken');
+      const name = urlParams.get('userName');
+
+      if (token) {
+        accessToken.value = token;
+        userName.value = name || 'User';
         isAuthenticated.value = true;
-      } catch (error) {
-        console.error('Error fetching tokens', error);
+        localStorage.setItem('accessToken', token); // Store the access token in localStorage
+
+        // Clear the query parameters from the URL
+        window.history.replaceState({}, document.title, '/');
+      } else {
+        // Check if there's a token stored in localStorage
+        const storedToken = localStorage.getItem('accessToken');
+        if (storedToken) {
+          accessToken.value = storedToken;
+          isAuthenticated.value = true;
+        }
       }
     };
 
-    // Function to fetch user profile from Microsoft Graph
-    const getUserProfile = async (accessToken) => {
-      try {
-        const response = await axios.get('https://graph.microsoft.com/v1.0/me', {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-          },
-        });
-        console.log('User Profile:', response.data);
-        userName.value = response.data.displayName; // Set the username
-      } catch (error) {
-        console.error('Error fetching user profile:', error);
-      }
-    };
-
-    // Check if there's an authorization code in the URL
-    const urlParams = new URLSearchParams(window.location.search);
-    const code = urlParams.get('code');
-    if (code) {
-      getTokens(code); // Exchange the authorization code for tokens
-    }
+    onMounted(() => {
+      checkAuthentication();
+    });
 
     return {
       isAuthenticated,
       userName,
       login,
+      logout,
     };
   },
 };

@@ -1,14 +1,20 @@
+<!-- src/components/AppointmentForm.vue -->
 <template>
   <div>
     <h2>Schedule an Appointment</h2>
-    <form @submit.prevent="createAppointment">
+    <form v-if="isAuthenticated" @submit.prevent="createAppointment">
       <div>
         <label for="title">Title:</label>
         <input type="text" id="title" v-model="title" required />
       </div>
       <div>
         <label for="startTime">Start Time:</label>
-        <input type="datetime-local" id="startTime" v-model="startTime" required />
+        <input
+          type="datetime-local"
+          id="startTime"
+          v-model="startTime"
+          required
+        />
       </div>
       <div>
         <label for="endTime">End Time:</label>
@@ -20,81 +26,64 @@
       </div>
       <button type="submit">Create Appointment</button>
     </form>
+    <p v-if="!isAuthenticated">Please log in to create an appointment.</p>
     <p v-if="message">{{ message }}</p>
   </div>
 </template>
 
 <script>
-import { ref, inject } from 'vue';
+import { ref } from 'vue';
 import axios from 'axios';
 
 export default {
-  setup() {
-    const msalInstance = inject('msalInstance');
+  props: {
+    isAuthenticated: {
+      type: Boolean,
+      required: true,
+    },
+  },
+  setup(props) {
     const title = ref('');
     const startTime = ref('');
     const endTime = ref('');
     const description = ref('');
     const message = ref('');
 
-    // Get the user's local timezone using Intl API
-    const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-
     const createAppointment = async () => {
-      const accounts = msalInstance.getAllAccounts();
-      if (accounts.length === 0) {
+      if (!props.isAuthenticated) {
         message.value = 'Please log in to create an appointment.';
         return;
       }
 
       try {
-        const account = accounts[0];
-        const response = await msalInstance.acquireTokenSilent({
-          scopes: ['Calendars.ReadWrite'],
-          account: account,
-        });
+        // Get the access token from localStorage
+        const token = localStorage.getItem('accessToken');
+        if (!token) {
+          message.value = 'Access token is missing. Please log in again.';
+          return;
+        }
 
-        const accessToken = response.accessToken;
-
-        // Event object with user's timezone
-        const event = {
-          subject: title.value,
-          body: {
-            contentType: 'HTML',
-            content: description.value,
-          },
-          start: {
-            dateTime: new Date(startTime.value).toISOString(),
-            timeZone: userTimeZone, // Use local timezone
-          },
-          end: {
-            dateTime: new Date(endTime.value).toISOString(),
-            timeZone: userTimeZone, // Use local timezone
-          },
-        };
-
-        // Make the request to Microsoft Graph API to create the event
-        const graphResponse = await axios.post(
-          'https://graph.microsoft.com/v1.0/me/events',
-          event,
+        // Send request to the backend to create the appointment
+        const response = await axios.post(
+          'http://localhost:3000/appointments',
           {
-            headers: {
-              Authorization: `Bearer ${accessToken}`,
-              'Content-Type': 'application/json',
-            },
+            accessToken: token, // Use the stored access token
+            title: title.value,
+            startTime: startTime.value,
+            endTime: endTime.value,
+            description: description.value,
           }
         );
 
-        if (graphResponse.status === 201) {
+        if (response.status === 201) {
           message.value = 'Appointment created successfully!';
-          // Reset form fields
           title.value = '';
           startTime.value = '';
           endTime.value = '';
           description.value = '';
         }
       } catch (error) {
-        console.error(error);
+        console.error('Error creating appointment:', error);
         message.value = 'Failed to create appointment. Please try again.';
       }
     };
@@ -106,7 +95,6 @@ export default {
       description,
       createAppointment,
       message,
-      userTimeZone, // Make the timezone accessible in the template if needed
     };
   },
 };
