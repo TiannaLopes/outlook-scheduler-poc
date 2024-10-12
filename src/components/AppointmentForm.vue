@@ -69,7 +69,7 @@ export default {
         }
 
         const response = await axios.post(
-          'http://localhost:3000/appointments',
+          'https://outlook-scheduler-poc-be-e4c1fcd1a068.herokuapp.com/appointments',
           {
             accessToken: token,
             title: title.value,

@@ -36,7 +36,8 @@ export default {
      * This function initiates the login flow by navigating to the backend login endpoint.
      */
     const login = () => {
-      window.location.href = 'http://localhost:3000/auth/login';
+      window.location.href =
+        'https://outlook-scheduler-poc-be-e4c1fcd1a068.herokuapp.com/auth/login';
     };
 
     /**
