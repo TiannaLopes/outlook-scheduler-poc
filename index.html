@@ -1,1 +1,170 @@
-<!doctype html><html lang=""><head><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="icon" href="/outlook-scheduler-poc/favicon.ico"><title>outlook-scheduler-poc</title><script defer="defer" src="/outlook-scheduler-poc/js/chunk-vendors.3751cb60.js"></script><script defer="defer" src="/outlook-scheduler-poc/js/app.fdbfacca.js"></script><link href="/outlook-scheduler-poc/css/app.60a477bb.css" rel="stylesheet"></head><body><noscript><strong>We're sorry but outlook-scheduler-poc doesn't work properly without JavaScript enabled. Please enable it to continue.</strong></noscript><div id="app"></div></body></html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Home</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Home</h1>
+
+    
+
+
+
+    
+
+
+    <h3> </h3>
+
+
+
+
+
+
+
+
+
+
+    
+
+
+
+
+    <section>
+        <article><h1>Outlook Scheduler POC</h1>
+<p>This project is a proof of concept for scheduling appointments in an Outlook calendar using a Vue.js frontend and a Node.js/Express backend. The app integrates with Microsoft Azure Active Directory (Azure AD) for authentication and uses the Microsoft Graph API to create calendar events.</p>
+<h2>Project Setup</h2>
+<p>To get started, follow these steps:</p>
+<h3>Install Dependencies</h3>
+<pre class="prettyprint source lang-bash"><code>npm install
+</code></pre>
+<h3>Compiles and Hot-Reloads for Development</h3>
+<pre class="prettyprint source lang-bash"><code>npm run serve
+</code></pre>
+<h3>Compiles and Minifies for Production</h3>
+<pre class="prettyprint source lang-bash"><code>npm run build
+</code></pre>
+<h3>Lints and Fixes Files</h3>
+<pre class="prettyprint source lang-bash"><code>npm run lint
+</code></pre>
+<h3>JSDoc Documentation</h3>
+<p>The project uses JSDoc for code documentation. To view the generated docs locally, open the <code>docs/index.html</code> file in your browser.</p>
+<p>To regenerate the documentation:</p>
+<pre class="prettyprint source lang-bash"><code>npm run docs
+</code></pre>
+<p>The documentation is also hosted online at <a href="https://%3Cyour-username%3E.github.io/%3Cyour-repo-name%3E/">Project Documentation</a>.</p>
+<h3>Customize Configuration</h3>
+<p>See <a href="https://cli.vuejs.org/config/">Configuration Reference</a>.</p>
+<h2>Features</h2>
+<h3>Azure Active Directory Integration</h3>
+<p>The app integrates with Microsoft Azure Active Directory for authentication:</p>
+<ul>
+<li>Users are redirected to the Microsoft login page to authenticate using their Microsoft account (supports both organizational and personal accounts).</li>
+<li>The app uses OAuth 2.0 with the PKCE (Proof Key for Code Exchange) flow for secure authentication.</li>
+<li>Access tokens are retrieved and stored in the browser for making authenticated requests to the Microsoft Graph API.</li>
+</ul>
+<h3>Logging in to Microsoft</h3>
+<ul>
+<li>Clicking the &quot;Login with Microsoft&quot; button redirects the user to the authentication endpoint (<code>/auth/login</code>).</li>
+<li>After successful login, the app stores the access token and user's name in the browser's local storage.</li>
+<li>The user's authenticated status is maintained across sessions as long as the token is valid.</li>
+</ul>
+<h3>Creating Calendar Appointments</h3>
+<ul>
+<li>Authenticated users can create appointments in their Outlook calendar.</li>
+<li>The user can fill out a form with the appointment details, including the title, start time, end time, and description.</li>
+<li>When the form is submitted, a request is sent to the backend, which uses the Microsoft Graph API to create the event in the user's calendar.</li>
+</ul>
+<h3>Backend Connection</h3>
+<p>The backend is a Node.js/Express server that handles:</p>
+<ol>
+<li><strong>Authentication Flow:</strong> It manages the OAuth 2.0 authorization process, including generating a PKCE code verifier and exchanging authorization codes for access tokens.</li>
+<li><strong>Creating Calendar Events:</strong> It accepts requests from the frontend to create calendar events using the Microsoft Graph API.</li>
+</ol>
+<p>The backend uses the following endpoints:</p>
+<ul>
+<li><code>GET /auth/login</code>: Redirects users to the Microsoft login page.</li>
+<li><code>GET /auth/callback</code>: Handles the redirect from Microsoft after login and exchanges the authorization code for an access token.</li>
+<li><code>POST /appointments</code>: Creates a new calendar event using the Microsoft Graph API.</li>
+</ul>
+<h2>Documentation</h2>
+<p>For more details on the project's structure and code documentation, please see the <a href="https://%3Cyour-username%3E.github.io/%3Cyour-repo-name%3E/">Project Documentation</a>.</p>
+<h2>Next Steps and Future Improvements</h2>
+<h3>Possible Features to Add</h3>
+<ol>
+<li>
+<p><strong>Improved Error Handling and User Feedback:</strong></p>
+<ul>
+<li>Display more informative messages to the user when authentication fails or calendar event creation encounters an issue.</li>
+</ul>
+</li>
+<li>
+<p><strong>Token Refresh Mechanism:</strong></p>
+<ul>
+<li>Implement a token refresh flow to automatically renew the access token when it expires.</li>
+</ul>
+</li>
+<li>
+<p><strong>Recurring Events Support:</strong></p>
+<ul>
+<li>Add the ability to schedule recurring events (e.g., daily, weekly).</li>
+</ul>
+</li>
+<li>
+<p><strong>Multiple Calendar Support:</strong></p>
+<ul>
+<li>Allow users to choose which calendar to add the event to (e.g., work calendar, personal calendar).</li>
+</ul>
+</li>
+<li>
+<p><strong>Notification System:</strong></p>
+<ul>
+<li>Send email or in-app notifications when an appointment is approaching.</li>
+</ul>
+</li>
+<li>
+<p><strong>Offline Support and Data Synchronization:</strong></p>
+<ul>
+<li>Enable offline access and synchronize appointments when the user comes back online.</li>
+</ul>
+</li>
+</ol>
+<h2>Contributing</h2>
+<p>Feel free to open issues and submit pull requests to help improve this project. Follow the existing coding style and add JSDoc comments for any new functions.</p>
+<h2>License</h2>
+<p>This project is licensed under the MIT License. See the <a href="LICENSE">LICENSE</a> file for details.</p></article>
+    </section>
+
+
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.3</a> on Tue Oct 15 2024 02:05:53 GMT+0000 (Coordinated Universal Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
