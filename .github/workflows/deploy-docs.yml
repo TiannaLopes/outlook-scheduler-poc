@@ -1,34 +1,49 @@
-name: Deploy JSDoc
+name: Deploy to GitHub Pages
 
 on:
   push:
     branches:
       - main
+  workflow_dispatch: # Allows manual triggers
 
 permissions:
   contents: write
 
 jobs:
-  build:
+  build-and-deploy:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3 # Updated to v3
+        uses: actions/checkout@v3
 
       - name: Set up Node.js
-        uses: actions/setup-node@v3 # Updated to v3
+        uses: actions/setup-node@v3
         with:
           node-version: '16'
 
       - name: Install dependencies
         run: npm install
 
+      # Step 1: Generate JSDoc documentation
       - name: Generate JSDoc
         run: npm run docs
 
+      # Step 2: Build the Vue app
+      - name: Build Vue App
+        run: npm run build
+
+      # Step 3: Deploy JSDoc and Vue App to GitHub Pages
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
-          github_token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
-          publish_dir: ./docs
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./docs # JSDoc output folder
+          keep_files: true # Keep previous files (Vue app and JSDoc)
+
+      - name: Deploy Vue App to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./dist # Vue app build output
+          keep_files: true # Keep previous files (JSDoc and Vue app)
